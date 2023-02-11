@@ -1,5 +1,7 @@
 from tabulate import tabulate
 
+# The following program will read from inventory.txt file and is designed to assist with stock take.
+
 #========The beginning of the class==========
 class Shoe:
 
@@ -11,24 +13,17 @@ class Shoe:
         self.quantity = int(quantity)
 
     def get_cost(self):
-        '''
-        Add the code to return the cost of the shoe in this method.
-        '''
+       
         return (self.cost)
       
 
     def get_quantity(self):
-        '''
-        Add the code to return the quantity of the shoes.
-        '''
+       
         return (self.quantity)
        
 
     def __str__(self):
 
-        '''
-        Add a code to returns a string representation of a class.
-        '''
         return (
             f"{self.country}, {self.code}, {self.product}, {self.cost}, {self.quantity}"
             )
@@ -43,20 +38,23 @@ shoe_list = []
 #==========Functions outside the class==============
 def read_shoes_data():
     '''
-    This function will open the file inventory.txt
-    and read the data from this file, then create a shoes object with this data and append this object into the shoes list. One line in this file represents data to create one object of shoes. You must use the try-except in this function for error handling. Remember to skip the first line using your code.
+    This function will open the file inventory.txt and read the data from this file,
+    then create a shoes object with this data and append this object into the shoes list.  
     '''
+    # Here we use the try-except in this function for error handling. 
     try:
 
         with open ("inventory.txt", "r") as file:
             file = file.readlines()
         for line in file:
+            # Here we will skip the first line as it is the title
             if file.index(line) == 0:
                 pass
             elif file.index(line) > 0:
                 country, code, product, cost, quantity = line.strip().split(",")
 
                 shoe = Shoe(country, code, product, cost, quantity)
+                # The line above represents data to create one object of shoes.
                 shoe_list.append(shoe)
     except FileNotFoundError:
         print("File does not exist! Please try again")
@@ -81,22 +79,19 @@ def view_all():
     '''
     This function will iterate over the shoes list and
     print the details of the shoes returned from the __str__
-    function. Optional: you can organise your data in a table format
-    by using Pythons tabulate module.
+    function.
     '''
     table_list = [["Country", "Code", "Product", "Cost", "Quantity"]]
     for shoe in shoe_list:
         lst1 = shoe.__str__().strip().split(",")
         table_list.append(lst1)
-
+    # Here we use the tabulate module to display the data
     print(tabulate(table_list, headers="firstrow", tablefmt="fancy_grid"))
 
 def re_stock():
     '''
     This function will find the shoe object with the lowest quantity,
-    which is the shoes that need to be re-stocked. Ask the user if they
-    want to add this quantity of shoes and then update it.
-    This quantity should be updated on the file for this shoe.
+    which is the shoes that need to be re-stocked.
     '''
     f = open("inventory.txt", "r")
     lines = f.readlines()
@@ -104,22 +99,23 @@ def re_stock():
     for shoe in shoe_list:
         lst1 = shoe.__str__().strip().split(",")
         shoe_dict[lst1[2]] = shoe.get_quantity()
-
     lowest = min(shoe_dict.values())
-    print(shoe_dict)
+
+# We will ask the user if they want to add this quantity of shoes and then update it.
     for key, value in shoe_dict.items():
         if value == lowest:
             restock_num = int(input(f"{key}'s are low in stock, how much stock would you like to add? "))
 
+# This quantity should be updated on the file for this shoe.
     writer = open("inventory.txt", "w")
     for line in lines:
-        split_line = line.strip().split(",") 
-        if split_line[-1].strip() == str(lowest).strip(): 
-            print("IF RAN") 
-            split_line[-1] = f"{str(restock_num)}\n" 
-            edited_line = ",".join(split_line) 
-            lines[lines.index(line)] = edited_line 
-            writer.writelines(lines) 
+        split_line = line.strip().split(",")
+        if split_line[-1].strip() == str(lowest).strip():
+
+            split_line[-1] = f"{str(restock_num)}\n"
+            edited_line = ",".join(split_line)
+            lines[lines.index(line)] = edited_line
+            writer.writelines(lines)
             print("WRITTEN")
             writer.close()
 
@@ -147,8 +143,7 @@ def search_shoe():
 def value_per_item():
     '''
     This function will calculate the total value for each item.
-    Please keep the formula for value in mind: value = cost * quantity.
-    Print this information on the console for all the shoes.
+    This information will be printed on the console for all the shoes.
     '''
     shoe_dict = {}
     for shoe in shoe_list:
@@ -157,12 +152,16 @@ def value_per_item():
         shoe_dict[lst1[2]] = value
 
     for key, value in shoe_dict.items():
-        print(f"{key} : ${value}")
+        print(f"""{BOLD}{WHITE}
+        ----------------------------------------------------------------
+                {key}      :     ${value}
+        ----------------------------------------------------------------{END}
+        """)
 
 
 def highest_qty():
     '''
-    Write code to determine the product with the highest quantity and
+    The code below is to determine the product with the highest quantity and
     print this shoe as being for sale.
     '''
     shoe_dict = {}
@@ -173,13 +172,23 @@ def highest_qty():
     highest = max(shoe_dict.values())
     for key, value in shoe_dict.items():
         if value == highest:
-            print(f"{key} is on sale!")
+            print(f"""{BOLD}{WHITE}
+            ----------------------------------------------------------------
+            Massive $ale on the {key}'s $ale! $ale!, come and grab a bargain
+            ----------------------------------------------------------------{END}
+            
+            """)
 
 #==========Main Menu=============
 '''
-Create a menu that executes each function above.
-This menu should be inside the while loop. Be creative!
+The choice menu below will execute each function above.
 '''
+WHITE = "\u001b[47m"
+END = "\033[0m"
+BOLD =  "\u001b[1m"
+BLACK = "\u001b[30;1m"
+# here we create a variables to be able to change the font and the background in parts of the program like the menu section.
+
 Choice = """
 Welcome to the Nike Warehouse system! What would you like to do?
 
@@ -195,7 +204,7 @@ e - exit this program.
 read_shoes_data()
 
 while True:
-    user_choice = input(Choice).strip().lower()
+    user_choice = input(F"{WHITE}{BOLD}{BLACK}{Choice.strip().lower()}{END}")
 
     if user_choice == "s":
         search_shoe()
