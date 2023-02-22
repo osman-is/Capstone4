@@ -1,4 +1,4 @@
-Capstone 4 project -- OOP
+**Capstone 4 project -- OOP**
 
 This is a description of the fourth HyperionDev Capstone Project which involves creating an inventory management program for Nike warehouses.
 
